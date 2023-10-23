@@ -1,0 +1,139 @@
+from graphics import Canvas
+import time
+import random
+    
+CANVAS_WIDTH = 400
+CANVAS_HEIGHT = 400
+SIZE = 20
+
+# if you make this larger, the game will go slower
+DELAY = 0.2 
+
+def main():
+    canvas = Canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
+    
+    #create the world, player initial place
+    left_x = 0
+    top_y = 0
+    right_x = left_x + SIZE
+    bottom_y = top_y + SIZE
+    color = "blue"
+    player = canvas.create_rectangle(left_x, top_y, right_x, bottom_y, color)
+    
+    # initial setup of the change
+    change_x = 0
+    change_y = 0
+    
+    time.sleep(DELAY)
+    
+    #create the goal in initial location
+    goal_x = CANVAS_WIDTH - SIZE*2
+    goal_y = CANVAS_HEIGHT - SIZE*2
+    goal = create_goal(canvas, goal_x, goal_y)
+    
+    time.sleep(DELAY)
+    
+    # set initial direction moving to the right
+    direction = "ArrowRight"
+    status = 1
+    # the general animation move
+    while True:
+        
+        if direction == 'ArrowDown':
+        # the animation to move down if direction == 'ArrowDown'     
+            while True:
+                change_x += 0
+                change_y += SIZE
+                move_player(canvas, player, left_x, top_y, change_x, change_y)
+                direction = canvas.get_last_key_press()
+                if direction == 'ArrowUp' or direction == "ArrowLeft" or direction == "ArrowRight":
+                    # break the loop if any direction key pressed
+                    break
+                check_bounds(canvas, player, status)
+                if status == 0:
+                    break
+        
+        elif direction == "ArrowLeft":
+        # the animation to move down if direction == 'ArrowLeft'    
+            while True:
+                change_x += -SIZE
+                change_y += 0
+                move_player(canvas, player, left_x, top_y, change_x, change_y)
+                direction = canvas.get_last_key_press()
+                if direction == 'ArrowUp' or direction == "ArrowDown" or direction == "ArrowRight":
+                    # break the loop if any direction key pressed
+                    break
+                check_bounds(canvas, player, status)
+                if status == 0:
+                    break
+        
+        elif direction == "ArrowUp":
+        # the animation to move down if direction == 'ArrowUp'
+            while True:
+                change_x += 0
+                change_y += -SIZE
+                move_player(canvas, player, left_x, top_y, change_x, change_y)
+                direction = canvas.get_last_key_press()
+                if direction == 'ArrowDown' or direction == "ArrowLeft" or direction == "ArrowRight":
+                    # break the loop if any direction key pressed
+                    break
+                check_bounds(canvas, player, status)
+                if status == 0:
+                    break
+        
+        else:
+         # the animation to move down if direction == 'ArrowLeft'
+            while True:
+                change_x += SIZE
+                change_y += 0
+                move_player(canvas, player, left_x, top_y, change_x, change_y)
+                direction = canvas.get_last_key_press()
+                if direction == 'ArrowRight' or direction == "ArrowUp" or direction == "ArrowDown":
+                    # break the loop if any direction key pressed
+                    break
+                check_bounds(canvas, player, status)
+                if status == 0:
+                    break
+        time.sleep(DELAY)    
+
+def check_bounds(canvas, player, status):
+    # function to check if the player is still on the filed (canvas)
+    x = canvas.get_left_x(player)
+    y = canvas.get_top_y(player)
+    print(x, y)
+    if x < 0 or x > CANVAS_WIDTH or y < 0 or y > CANVAS_HEIGHT:
+        status = 0
+    return status
+
+def move_player(canvas, player, left_x, top_y, change_x, change_y):
+    # function in charge of moving the player to a new location
+    if left_x < CANVAS_WIDTH:
+        left_x += change_x
+        top_y += change_y
+        player = canvas.moveto(player, left_x, top_y)
+        time.sleep(DELAY)
+    return player, left_x, top_y
+    
+def create_player(canvas, left_x, top_y, right_x, bottom_y, color):
+    canvas.create_rectangle(left_x, top_y, right_x, bottom_y, color)    
+
+def create_goal(canvas, goal_x, goal_y):
+    # this function will create square/goal starting at goal_x, goal_y
+    left_x = goal_x
+    top_y = goal_y
+    right_x = left_x + SIZE
+    bottom_y = top_y + SIZE
+    color = "orange"
+    canvas.create_rectangle(left_x, top_y, right_x, bottom_y, color)    
+
+def move_goal(canvas, goal_1, goal_x, goal_y):
+    left_x = goal_x
+    top_y = goal_y
+    print(left_x, top_y, goal_1)
+    goal = goal_1
+    goal = canvas.moveto(goal, left_x, top_y)
+    time.sleep(DELAY)
+    return goal
+
+if __name__ == '__main__':
+    main()
