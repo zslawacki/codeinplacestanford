@@ -1,0 +1,43 @@
+from karel.stanfordkarel import *
+
+def main():
+   # this program will fill the world with dimonds
+
+    fill_one_line()
+    for i in range(9):
+        if facing_east():
+            left_move_fill()
+        else:
+            right_move_fill()
+    #Karel to face east as at the start
+    turn_left()
+    turn_left()
+   
+def fill_one_line():
+   for i in range(9):
+      if no_beepers_present():
+         put_beeper()
+      if front_is_clear():
+         move()
+   if no_beepers_present():
+       put_beeper()
+   
+def left_move_fill():
+   turn_left()
+   move()
+   turn_left()
+   fill_one_line()
+   
+def right_move_fill():
+   turn_right()
+   move()
+   turn_right()
+   fill_one_line()
+
+def turn_right():
+   for i in range(3):
+      turn_left()
+
+# don't change this code
+if __name__ == '__main__':
+    main()
