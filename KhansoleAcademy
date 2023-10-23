@@ -1,0 +1,31 @@
+import random
+
+def main():
+    print("Khansole Academy")
+    # TODO: your code here
+    what_is_sum()
+    
+def what_is_sum():
+    #two random numbers sekection
+    r_num_1 = random.randint(10, 99)
+    print(r_num_1)
+    r_num_2 = random.randint(10, 99)
+    print(r_num_2)
+    #ask for answer of the sum of two random numbers
+    print("What is " + str(r_num_1) + " + " + str(r_num_2) + "?")
+    s_answer = int(input("Your answer: "))
+    while s_answer != r_num_1 + r_num_2:
+        #print Incorrect and correct answer
+        print("Incorrect. ")
+        print("The expected answer is " + str(r_num_1 + r_num_2))
+        #ask for answer of the sum of two new random numbers
+        r_num_1 = random.randint(10, 99)
+        r_num_2 = random.randint(10, 99)
+        print("What is " + str(r_num_1) + " + " + str(r_num_2) + "?")
+        s_answer = int(input("Your answer: "))
+    print("Correct!")
+    
+    
+    
+if __name__ == '__main__':
+    main()
