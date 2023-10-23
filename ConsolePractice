@@ -1,0 +1,40 @@
+#from graphics import Canvas
+#import time
+
+def count_to_n(n, m):
+    '''
+    prints numbers from 0 to n-1
+    params: 
+        n (int): number to count up to
+    '''
+    print(m)
+    for i in range(n):
+        print(i)
+
+
+def main():
+    message = "Counting up from zero!"
+    count_to_n(10, message)
+
+
+if __name__ == "__main__":
+	main()
+
+"""
+def main():
+    print("Hello World!")
+    
+    print("How old are you? ")
+    answer = int(input("Your answer please: "))
+    print("You answer is: " + str(answer) + " years old")
+    
+    answer2 = input("How are you today? ")
+    print("You said: " + answer2)
+    
+    answer3 = input("Where are you from? ")
+    print("You said that you are from " + answer3)
+
+if __name__ == "__main__":
+    main()
+    
+"""
