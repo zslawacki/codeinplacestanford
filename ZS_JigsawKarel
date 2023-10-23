@@ -1,0 +1,54 @@
+from karel.stanfordkarel import *
+
+"""
+File: PuzzleKarel.py
+--------------------
+Karel should finish the puzzle by picking up the last beeper 
+(puzzle piece) and placing it in the right spot. Karel should 
+end in the same position Karel starts in -- the bottom left 
+corner of the world.
+"""
+
+
+def main():
+    pick_last_beeper()
+    put_last_beeper()
+    return_home()
+    
+def pick_last_beeper():
+    move()
+    move()
+    pick_beeper()
+    
+def put_last_beeper():
+    move()
+    turn_left()
+    move_two_fields()
+    put_beeper()
+    
+def return_home():
+    turn_around()
+    move_two_fields()
+    turn_around()
+    turn_left()
+    move_three_fields()
+    turn_around()
+
+def move_two_fields():
+    move()
+    move()
+
+def move_three_fields():
+    move()
+    move()
+    move()
+    
+def turn_around():
+    turn_left()
+    turn_left()
+    
+
+
+# There is no need to edit code beyond this point
+if __name__ == '__main__':
+    main()
