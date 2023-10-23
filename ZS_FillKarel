@@ -1,0 +1,58 @@
+from karel.stanfordkarel import *
+
+"""
+Karel should fill the whole world with beepers.
+"""
+
+
+def main():
+    """
+    You should write your code to make Karel do its task in
+    this function. Make sure to delete the 'pass' line before
+    starting to write your own code. You should also delete this
+    comment and replace it with a better, more descriptive one.
+    """
+    # three functions running in the while loop
+    
+    while no_beepers_present():
+        fill_one_line()
+        return_home()
+        move_line_up()
+    
+def fill_one_line():
+    #function to fill one line with beepers
+    put_beeper()
+    while front_is_clear():
+        move()
+        put_beeper()
+
+def return_home():
+    # function to retunr to the edge - both ways
+    turn_around()
+    while front_is_clear():
+        move()
+
+def move_line_up():
+    # function move one line up
+    # checing front while karel is facing north
+    turn_right()
+    if front_is_clear():
+        move()
+        turn_right()
+    else:
+        turn_left()
+        return_home()
+
+def turn_around():
+    # turn around function
+    for i in range(2):
+        turn_left()
+        
+def turn_right():
+    # turn right function
+    for i in range(3):
+        turn_left()
+
+# There is no need to edit code beyond this point
+if __name__ == '__main__':
+    main()
