@@ -1,0 +1,216 @@
+import graphics
+import time
+import random
+import math
+
+CANVAS_WIDTH = 500
+CANVAS_HEIGHT = 600
+PADDLE_Y = CANVAS_HEIGHT - 30
+PADDLE_WIDTH = 80
+PADDLE_HEIGHT = 15
+BALL_RADIUS = 10
+BALL_X = CANVAS_WIDTH/2 + 40
+BALL_Y = CANVAS_HEIGHT/2
+INITIAL_VELOCITY = 8
+
+BRICK_GAP = 5
+BRICK_WIDTH = (CANVAS_WIDTH-BRICK_GAP*9) / 10
+BRICK_HEIGHT = 10
+
+WALL = []
+DELAY = 0.02
+# dealy for a new game to start after the ball was lost
+NG_DELAY = 2
+
+# 0 = no change, 1 = change the y direction when a ball hits a brick and a brick is removed
+# Y_DIR_CHANGE = 0
+
+def main():
+    canvas = graphics.Canvas(CANVAS_HEIGHT,CANVAS_HEIGHT)
+    
+    # This section of the main function will create an initial stage
+    
+    # let's call the function to create brick wall
+    create_brick_wall(canvas)
+    # we have created a list WALL where we stored IDs of all bricks, objctes creates 
+    
+    # let's call the function now creating the paddle
+    paddle = 0
+    paddle = create_paddle(canvas, paddle)
+    #print("m_create paddle", paddle)
+    # this part of the main function is to create a ball
+    ball_x = BALL_X
+    ball_y = BALL_Y
+    ball = create_ball(canvas, ball_x, ball_y)
+    
+    # let's start with setting the random velocity for ball animation
+    x_velocity = random.randint(3, 9)
+    y_velocity = random.randint(3, 9)
+    
+    # as we have 3 games, three balls, setting up the game counter to zero
+    game = 0
+    
+    while True:
+    
+        # let's check if we have lost already three balls
+        if game >= 3: 
+            b_left = len(WALL)
+            print("THE GAME IS OVER", b_left, "bricks left, THREE balls lost")
+            break
+        if WALL == []:
+            print("THE GAME IS OVER - NO BRICKS IN THE WALL")
+            break
+            
+        # check if the game should restart
+        if game > 0 and game < 3:
+                ball_x = BALL_X
+                ball_y = BALL_Y
+                moveto_ball_start(canvas, ball, ball_x, ball_y)
+                print("ball object", ball, ball_x, ball_y, y_velocity)
+             
+        
+        # the loop will start only if the mouse x is in canvas WIDTH boundaries
+        mouse_x = canvas.get_mouse_x()
+        if mouse_x > 0 and mouse_x < (CANVAS_WIDTH + 20):
+        
+            # here we should have the part of bouncing ball
+            
+            while True:
+                        
+                # this is the verification of conditions (revertion of x direction) for animation - left/right side of the canvas
+                if (ball_x < 0) or (ball_x + BALL_RADIUS >= (CANVAS_WIDTH + 100)): 
+                    x_velocity = - x_velocity
+                        
+                # the change of the direction of velocity of y - top edge
+                # a) ball_y < 0 - verification of the edge of canvas
+                # b) the other part after or is checking the paddle
+                
+                if (ball_y < 0):
+                    y_velocity = - y_velocity
+                    
+                # this part changes velocity of y when ball hits paddle
+                if (ball_y + BALL_RADIUS) >= PADDLE_Y and (ball_x >= left_x and ball_x <= (left_x + PADDLE_WIDTH)):
+                    y_velocity = - y_velocity
+                    
+                # this part will deal with counting the games - lost balls
+                if ((ball_y + BALL_RADIUS) > CANVAS_HEIGHT or ((ball_y + BALL_RADIUS) > PADDLE_Y and ball_x < left_x and (ball_x > left_x + PADDLE_WIDTH))) and game < 3:
+                    game += 1
+                    print("You have lost the ball number", game)
+                    break
+                
+                # this part of the code is the animation of bouncing ball
+                ball_x += x_velocity
+                ball_y += y_velocity
+                print("m_ball", ball, "bx:", ball_x, "by:", ball_y)
+                canvas.moveto(ball, ball_x, ball_y)
+                    
+                # call function verifying colliding objects
+                y_direction_change = 0
+                print("before f colliding:", ball, ball_x, ball_y, y_velocity, "y_direction_change", y_direction_change)
+                y_direction_change = colliding_objects(canvas, ball, ball_x, ball_y)
+                    
+                # check if the ball direction should be chenged after hitting the brick
+                if y_direction_change == 1:
+                    y_velocity = - y_velocity
+                        
+                print("after f colloliding:", y_velocity, "y_direction_change", y_direction_change)
+                    
+                # check if all bricks were removed from canvas - WALL list
+                if WALL == []:
+                    print("The game is over! All bricks were removed from the WALL.")
+                    break
+                    
+                # this is the animation for moving paddle as per mouse x
+                left_x = canvas.get_mouse_x()
+                move_paddle(canvas, paddle, left_x)
+                    
+
+def colliding_objects(canvas, ball, ball_x, ball_y):
+    # this function will do the following:
+    # a) create a list of brickes colliding with a ball
+    # b) remove the bricks colliding with the ball from canvas
+    # c) change the direction of the y_velocity
+    # setting up the ball's coordinates to find ovellaping objects
+    x_1 = ball_x
+    y_1 = ball_y
+    x_2 = x_1 + BALL_RADIUS
+    y_2 = y_1 + BALL_RADIUS
+    # creating a list to store all colliding objects
+    colliding_list = []
+    colliding_list = canvas.find_overlapping(x_1, y_1, x_2, y_2)
+    y_direction_change = 0
+    # print(colliding_list)
+    # section to deal with point a) and b) 
+    # verify the object should be removed, and remove it
+    for value in colliding_list:
+        if value == "":
+            y_direction_change = 0
+            print("no colliding object", value, "y_direction_change", y_direction_change)
+        #if value == "shape_120":
+        #    y_direction_change = 1
+        #    print("colliding function", value, "y_direction_change", y_direction_change)
+        if value != "shape_121" and value != "shape_120":
+            canvas.delete(value)
+            print("brick", value, "removed")
+            WALL.remove(value)
+            y_direction_change = 1
+            print("colliding object", value, "y_direction_change", y_direction_change)
+    return y_direction_change
+    
+    
+def moveto_ball_start(canvas, ball, s_ball_x, s_ball_y):
+    # this function should restart the game, move ball to starting position
+    canvas.moveto(ball, s_ball_x, s_ball_y)
+    print("moveto_ball_start:", ball, s_ball_x, s_ball_y)
+    time.sleep(NG_DELAY)
+
+    
+def move_paddle(canvas, paddle, left_x):
+    # this function in charge of moving the paddle to a new location
+    # print("f_move", paddle, left_x, top_y)
+    if left_x > 0 and left_x < (CANVAS_WIDTH + 20):
+        top_y = PADDLE_Y
+        paddle = canvas.moveto(paddle, left_x, top_y)
+        time.sleep(DELAY)
+    return paddle
+
+def create_ball(canvas, ball_x, ball_y):
+    # this function will create a ball
+    b_right_x = ball_x + BALL_RADIUS
+    b_bottom_y = ball_y + BALL_RADIUS
+    ball = canvas.create_oval(ball_x, ball_y, b_right_x, b_bottom_y, "black")
+    print("f_create_ball", ball, ball_x, ball_y)
+    return ball
+    
+def create_paddle(canvas, paddle):
+    # this function will create now a paddle in a black color
+    left_x = 0
+    top_y = PADDLE_Y
+    right_x = left_x + PADDLE_WIDTH
+    bottom_y = top_y + PADDLE_HEIGHT
+    paddle = canvas.create_rectangle(left_x, top_y, right_x, bottom_y, "black")
+    # print("f_create_paddle", paddle) 
+    return paddle
+    
+def create_brick_wall(canvas):
+    # this function will create a brick wall with colors as defined in the list colors
+    colors = ["red", "red", "orange", "orange", "yellow", "yellow", "green", "green", "cyan", "cyan"]
+    # print(colors)
+    len_colors = len(colors)
+    for i in range(len_colors):
+        # this loop initiate creation of the row for each brick color
+        # as per color selected from the list (10 colors in the list - 10 rows)
+        left_x = 0 + BRICK_GAP
+        top_y = 30+ (BRICK_GAP + BRICK_HEIGHT) * i 
+        color = colors[i]
+        for c in range (12):
+            # this loop creates a full row of 12 bricks for each color
+            left_x = (BRICK_GAP + BRICK_WIDTH) * c
+            right_x = left_x + BRICK_WIDTH
+            bottom_y = top_y + BRICK_HEIGHT
+            brick = canvas.create_rectangle(left_x, top_y, right_x, bottom_y, color)
+            WALL.append(brick) 
+    # print(WALL) - The shapes numbers are stored in GLOBAL LIST - "WALL"
+         
+if __name__ == '__main__':
+    main()
